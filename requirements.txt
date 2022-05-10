@@ -1,0 +1,6 @@
+allennlp==1.3
+transformers==4.0.0
+torch==1.7.0
+networkx
+pandas==1.1.5
+packaging==21.3

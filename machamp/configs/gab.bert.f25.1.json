@@ -1,0 +1,18 @@
+{
+    "FO18labels": {
+        "train_data_path": "machamp/data/gab.bert.f25.1.train",
+        "validation_data_path": "machamp/data/gab.bert.f25.1.dev",
+        "sent_idxs": [1],
+        "tasks": {
+            "hatelabels": {
+                "task_type": "classification",
+                "column_idx": 0,
+                "training_dynamics": true,
+                "metric": "macro-f1",
+                "class_weights": "balanced"
+            }
+        }
+    },
+
+}
+
