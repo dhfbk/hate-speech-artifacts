@@ -12,6 +12,7 @@ Alan Ramponi and Sara Tonelli. 2022. **Features or Spurious Artifacts? Data-cent
 - :memo: **Lexical artifacts statement template** ([here](artifacts-statement/README.md))
 - :pencil2: **Annotated lexical artifacts** ([here](resources/artifacts/README.md))
 - :gear: **Fine-tuned language models** ([here](resources/models/README.md))
+- :rocket: **`lexartifacts` package to ease documentation** ([here](lexartifacts-package/README.md))
 
 
 ## Getting started
