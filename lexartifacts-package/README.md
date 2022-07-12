@@ -9,7 +9,7 @@
 With just **2 lines of code** you can compute lexical artifacts on your own dataset and automatically generate outputs in different formats (from a simple raw `.tsv` table, to complete `.txt` or `tex` lexical artifacts statement) for **seamless inclusion in publications**.
 
 
-> [1] Alan Ramponi and Sara Tonelli. 2022. **Features or Spurious Artifacts? Data-centric Baselines for Fair and Robust Hate Speech Detection**. In *Proceedings of the 2022 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies*. [[cite]](#citation) [pdf (coming soon)]
+> [1] Alan Ramponi and Sara Tonelli. 2022. **Features or Spurious Artifacts? Data-centric Baselines for Fair and Robust Hate Speech Detection**. In *Proceedings of the 2022 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies*, pages 3027–3040, Seattle, United States. Association for Computational Linguistics. [[cite]](#citation) [[paper]](https://aclanthology.org/2022.naacl-main.221/)]
 
 :warning: **Warning**. *The package is a **beta release** that has been thoroughly tested on English and BERT-like tokenizers only. We are extending it to multiple languages and to all non-BERT-like tokenizers: stay tuned!* :rocket:
 
@@ -142,10 +142,14 @@ If you use or build on top of the `lexartifacts` python package, please cite the
 ```
 @inproceedings{ramponi-tonelli-2022-features,
     title = "Features or Spurious Artifacts? Data-centric Baselines for Fair and Robust Hate Speech Detection",
-    author = "Ramponi, Alan and Tonelli, Sara",
+    author = "Ramponi, Alan  and
+      Tonelli, Sara",
     booktitle = "Proceedings of the 2022 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies",
     month = jul,
     year = "2022",
-    address = "Seattle, Washington, USA"
+    address = "Seattle, United States",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2022.naacl-main.221",
+    pages = "3027--3040",
 }
 ```
