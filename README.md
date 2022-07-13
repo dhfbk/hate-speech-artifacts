@@ -5,7 +5,7 @@
 
 This repository contains code and resources associated to the paper:
 
-Alan Ramponi and Sara Tonelli. 2022. **Features or Spurious Artifacts? Data-centric Baselines for Fair and Robust Hate Speech Detection**. In *Proceedings of the 2022 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies*, pages 3027–3040, Seattle, United States. Association for Computational Linguistics. [[cite]](#citation) [[paper]](https://aclanthology.org/2022.naacl-main.221/)]
+Alan Ramponi and Sara Tonelli. 2022. **Features or Spurious Artifacts? Data-centric Baselines for Fair and Robust Hate Speech Detection**. In *Proceedings of the 2022 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies*, pages 3027–3040, Seattle, United States. Association for Computational Linguistics. [[cite]](#citation) [[paper]](https://aclanthology.org/2022.naacl-main.221/)
 
 **Useful resources**
 
