@@ -53,7 +53,11 @@
 
   "y","ye","year","years","yes","yet","you","you'd","you'll","you're","you've","youd","youll","young","younger","youngest","your","youre","yours","yourself","yourselves","youve","yt","yu",
 
-  "z","za","zero","zm","zr"],
+  "z","za","zero","zm","zr",
+  
+  "!","\"","#","$","%","&","'","(",")","*","+",",","-",".","/",":",";","<","=",">","?","@","[","]","^","_","`","{","|","}","~","…","‘","’","“","”", 
+  
+  "1","2","3","4","5","6","7","8","9","0"],
 
 
 "it":
@@ -97,7 +101,11 @@
 
   "va","vai","vale","vari","varia","varie","vario","verso","vi","vicino","visto","vita","voi","volta","volte","vostra","vostre","vostri","vostro",
 
-  "è"],
+  "è",
+  
+  "!","\"","#","$","%","&","'","(",")","*","+",",","-",".","/",":",";","<","=",">","?","@","[","]","^","_","`","{","|","}","~","…","‘","’","“","”", 
+  
+  "1","2","3","4","5","6","7","8","9","0"],
 
 "de":
    ["a","ab","aber","ach","acht","achte","achten","achter","achtes","ag","alle","allein","allem","allen","aller","allerdings","alles","allgemeinen","als","also","am","an","ander","andere","anderem","anderen","anderer","anderes","anderm","andern","anderr","anders","au","auch","auf","aus","ausser","ausserdem","außer","außerdem",
@@ -152,7 +160,11 @@
 
   "z","z.b","zehn","zehnte","zehnten","zehnter","zehntes","zeit","zu","zuerst","zugleich","zum","zunächst","zur","zurück","zusammen","zwanzig","zwar","zwei","zweite","zweiten","zweiter","zweites","zwischen","zwölf",
 
-  "über","überhaupt","übrigens"],
+  "über","überhaupt","übrigens",
+   
+  "!","\"","#","$","%","&","'","(",")","*","+",",","-",".","/",":",";","<","=",">","?","@","[","]","^","_","`","{","|","}","~","…","‘","’","“","”", 
+  
+  "1","2","3","4","5","6","7","8","9","0"],
 
 "ar":
   ["،",
@@ -221,6 +233,10 @@
 
   "يكون","يمكن","يوم",
 
-  "ّأيّان"]
+  "ّأيّان",
+  
+  "!","\"","#","$","%","&","'","(",")","*","+",",","-",".","/",":",";","<","=",">","?","@","[","]","^","_","`","{","|","}","~","…","‘","’","“","”", 
+  
+  "1","2","3","4","5","6","7","8","9","0"]
 
 }
