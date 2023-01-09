@@ -2,6 +2,8 @@ import math
 import numpy as np
 import pandas as pd
 import sys
+import json
+import importlib.resources
 
 from collections import Counter
 from transformers import AutoTokenizer
@@ -11,17 +13,17 @@ from lexartifacts import utils
 
 
 def compute_pmi(
-    w_count: Counter, 
-    l_count: Counter, 
-    w_l_count: Counter, 
+    w_count: Counter,
+    l_count: Counter,
+    w_l_count: Counter,
     num_texts: int
 ) -> pd.core.frame.DataFrame:
     """
-    A function that computes positive reweighted pointwise mutual information between tokens and 
+    A function that computes positive reweighted pointwise mutual information between tokens and
     labels, following the implementation by [1].
 
-    [1] Alan Ramponi and Sara Tonelli. 2022. Features or Spurious Artifacts? Data-centric Baselines 
-    for Fair and Robust Hate Speech Detection. In Proceedings of the 2022 Conference of the North 
+    [1] Alan Ramponi and Sara Tonelli. 2022. Features or Spurious Artifacts? Data-centric Baselines
+    for Fair and Robust Hate Speech Detection. In Proceedings of the 2022 Conference of the North
     American Chapter of the Association for Computational Linguistics: Human Language Technologies.
 
     Parameters
@@ -38,7 +40,7 @@ def compute_pmi(
     Returns
     -------
     pd.core.frame.DataFrame
-        Pandas dataframe with tokens as rows and classes as columns (namely, label_of_interest and 
+        Pandas dataframe with tokens as rows and classes as columns (namely, label_of_interest and
         "other"). Values in this matrix are PMI scores.
     """
     pmi_scores = {l:{} for l in l_count.keys()}
@@ -71,15 +73,15 @@ def compute_pmi(
 
 
 def get_counts(
-    texts: List[str], 
-    curr_label: str, 
-    label_of_interest: str, 
-    tokenizer: AutoTokenizer, 
+    texts: List[str],
+    curr_label: str,
+    label_of_interest: str,
+    tokenizer: AutoTokenizer,
     tokenizer_type: str,
     stopwords: str = "en"
 ) -> (Counter, Counter, Counter):
     """
-    A function that calculates relevant counts about a specific label after tokenizing the text 
+    A function that calculates relevant counts about a specific label after tokenizing the text
     according to a given pretrained tokenizer.
 
     Parameters
@@ -110,22 +112,26 @@ def get_counts(
     """
     token_counter, label_counter, token_label_counter = Counter(), Counter(), Counter()
 
+    with importlib.resources.open_text("lexartifacts", "stopwords.json") as f:
+        stopwords_dict = json.load(f)
+
     for i in range(len(texts)):
-        tokens = tokenizer.tokenize(texts[i])
+        # tokens = tokenizer.tokenize(texts[i])
+        tokens = tokenizer.encode(texts[i])
         label = label_of_interest if (curr_label == label_of_interest) else "other"
 
         label_counter[label] += 1
         for token in set(tokens):
-            if stopwords == "en":
-                # Retain all tokens except stopwords
-                if token.lstrip("Ġ") not in utils.EN_STOP_WORDS:
-                    if token != "":
-                        token_counter[token] += 1
-                        token_label_counter[(token, label)] += 1
-            else:
+            if stopwords is None:
                 if token != "":
                     token_counter[token] += 1
                     token_label_counter[(token, label)] += 1
+            else:
+                # Retain all tokens except stopwords
+                if token.lstrip("Ġ") not in stopwords_dict[stopwords]:
+                    if token != "":
+                        token_counter[token] += 1
+                        token_label_counter[(token, label)] += 1
 
     return token_counter, label_counter, token_label_counter
 
@@ -134,20 +140,20 @@ def normalize_pmi(pmi_scores: pd.core.frame.DataFrame) -> pd.core.frame.DataFram
     """
     A function that normalize a dataframe of PMI scores in [0,1], following the implementation by [1].
 
-    [1] Alan Ramponi and Sara Tonelli. 2022. Features or Spurious Artifacts? Data-centric Baselines 
-    for Fair and Robust Hate Speech Detection. In Proceedings of the 2022 Conference of the North 
+    [1] Alan Ramponi and Sara Tonelli. 2022. Features or Spurious Artifacts? Data-centric Baselines
+    for Fair and Robust Hate Speech Detection. In Proceedings of the 2022 Conference of the North
     American Chapter of the Association for Computational Linguistics: Human Language Technologies.
 
     Parameters
     ----------
     pmi_scores: pd.core.frame.DataFrame
-        Pandas dataframe with tokens as rows and classes as columns (namely, label_of_interest and 
+        Pandas dataframe with tokens as rows and classes as columns (namely, label_of_interest and
         "other"). Values in this matrix are PMI scores.
 
     Returns
     -------
     pmi_normalized: pd.core.frame.DataFrame
-        Normalized pandas dataframe with tokens as rows and classes as columns (namely, label_of_interest 
+        Normalized pandas dataframe with tokens as rows and classes as columns (namely, label_of_interest
         and "other"). Values in this matrix are normalized PMI scores.
     """
 
@@ -158,13 +164,13 @@ def normalize_pmi(pmi_scores: pd.core.frame.DataFrame) -> pd.core.frame.DataFram
         Parameters
         ----------
         dataframe: pd.core.frame.DataFrame
-            Pandas dataframe with tokens as rows and classes as columns (namely, label_of_interest and 
+            Pandas dataframe with tokens as rows and classes as columns (namely, label_of_interest and
             "other"). Values in this matrix are log2 PMI scores.
 
         Returns
         -------
         df_normalized: pd.core.frame.DataFrame
-            Normalized pandas dataframe with tokens as rows and classes as columns (namely, label_of_interest 
+            Normalized pandas dataframe with tokens as rows and classes as columns (namely, label_of_interest
             and "other"). Values in this matrix are min-max normalized log2 PMI scores.
         """
         df_normalized = dataframe.copy()
@@ -174,7 +180,7 @@ def normalize_pmi(pmi_scores: pd.core.frame.DataFrame) -> pd.core.frame.DataFram
             column_min = df_normalized[column].min()
             column_max = df_normalized[column].max()
             df_normalized[column] = (curr_column - column_min) / (column_max - column_min)
-            
+
         return df_normalized
 
     # Fill missing values with epsilon for calculating the log2
@@ -189,25 +195,25 @@ def normalize_pmi(pmi_scores: pd.core.frame.DataFrame) -> pd.core.frame.DataFram
 
 
 def compute(
-    texts: List[str], 
-    labels: List[str], 
-    label_of_interest: str, 
-    method: str = "pmi", 
+    texts: List[str],
+    labels: List[str],
+    label_of_interest: str,
+    method: str = "pmi",
     special_tokens: List[str] = [],
-    add_emojis: bool = True, 
+    add_emojis: bool = True,
     stopwords: str = "en",
-    pretrained_tokenizer: str = "bert-base-uncased", 
+    pretrained_tokenizer: str = "bert-base-uncased",
 ) -> pd.core.frame.DataFrame:
     """
-    A function that computes lexical artifacts given an input dataset (texts and labels) and a label 
+    A function that computes lexical artifacts given an input dataset (texts and labels) and a label
     of interest. Additional parameters can be specified to e.g., exclude emojis from the computation of
     lexical artifacts, add special tokens to the tokenizer's vocabulary, and in the near future changing the method and the
     pretrained tokenizer.
 
-    [1] Alan Ramponi and Sara Tonelli. 2022. Features or Spurious Artifacts? Data-centric Baselines 
-    for Fair and Robust Hate Speech Detection. In Proceedings of the 2022 Conference of the North 
+    [1] Alan Ramponi and Sara Tonelli. 2022. Features or Spurious Artifacts? Data-centric Baselines
+    for Fair and Robust Hate Speech Detection. In Proceedings of the 2022 Conference of the North
     American Chapter of the Association for Computational Linguistics: Human Language Technologies.
-    
+
     Parameters
     ----------
     texts: List[str]
@@ -236,7 +242,7 @@ def compute(
     Returns
     -------
     sorted_pmi_scores: pd.core.frame.DataFrame
-        Pandas dataframe with tokens as rows and label_of_interest as column. Values in this matrix 
+        Pandas dataframe with tokens as rows and label_of_interest as column. Values in this matrix
         are PMI scores following the implementation by [1].
     """
 
@@ -268,9 +274,9 @@ def compute(
 
     # Initialize the pretrained tokenizer with special tokens
     tokenizer = AutoTokenizer.from_pretrained(pretrained_tokenizer, use_fast=True)
-    tok_special_tokens = (special_tokens+utils.EMOJIS_TOKENS) if (add_emojis == True) else (special_tokens+[utils.EMOJI_TOKEN])
+    tok_special_tokens = (special_tokens+utils.EMOJIS_TOKENS) if (add_emojis is True) else (special_tokens+[utils.EMOJI_TOKEN])
     special_tokens_dict = {'additional_special_tokens': tok_special_tokens}
-    num_added_toks = tokenizer.add_special_tokens(special_tokens_dict)
+    tokenizer.add_special_tokens(special_tokens_dict)
 
     # Tokenize text, normalize labels, and count token/label/token-label occurrences
     token_counter, label_counter, token_label_counter = Counter(), Counter(), Counter()
@@ -280,7 +286,7 @@ def compute(
         token_counter += curr_token_counters
         label_counter += curr_label_counters
         token_label_counter += curr_token_label_counters
-    
+
     # Get the total count of texts according to the labels that are taken into consideration
     texts_count = sum(label_counter.values())
 
@@ -295,12 +301,12 @@ def compute(
     # Sort results by label (in descending order)
     sorted_pmi_scores = pmi_scores_norm[label_of_interest].to_frame().sort_values(
         by=[label_of_interest], ascending=False)
-    
+
     return sorted_pmi_scores
 
 
 def make_report(
-    artifacts_df: pd.core.frame.DataFrame, 
+    artifacts_df: pd.core.frame.DataFrame,
     top_k: int = 20,
     output_format: str = "raw",
     output_filepath: str = None
@@ -325,9 +331,9 @@ def make_report(
         curr_rank = 1
         for token, row in artifacts_df.head(top_k).iterrows():
             table_content.append(
-                str(curr_rank) + "\t" + 
-                token + "\t" + 
-                str(round(row[artifacts_df.columns[0]], 2))
+                str(curr_rank) + "\t"
+                + token + "\t"
+                + str(round(row[artifacts_df.columns[0]], 2))
             )
             curr_rank += 1
 
@@ -350,10 +356,10 @@ def make_report(
         curr_rank = 1
         for token, row in artifacts_df.head(top_k).iterrows():
             table_content.append(
-                " " * 8 + 
-                str(curr_rank) + " & " + 
-                token.replace("#", "\\#") + " & " + 
-                str(round(row[artifacts_df.columns[0]], 2)) + " \\\\"
+                " " * 8
+                + str(curr_rank) + " & "
+                + token.replace("#", "\\#") + " & "
+                + str(round(row[artifacts_df.columns[0]], 2)) + " \\\\"
             )
             curr_rank += 1
         table_legend = f"    \\caption{{\\label{{tab:top-k-lexical-artifacts}} Top {top_k} most informative tokens for the {artifacts_df.columns[0]} class according to PMI.}}\n\\end{{table}}"
